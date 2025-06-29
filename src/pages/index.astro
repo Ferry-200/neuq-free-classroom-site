@@ -1,16 +1,89 @@
 ---
+import { getCollection } from "astro:content";
 
+const allData = await getCollection("free-classroom-data");
+
+const dataList = allData
+  .map((entry) => {
+    const match = entry.id.match(/^gxg-(\d{4}-\d{1,2}-\d{1,2})-(\d+)-\2$/);
+    if (!match) return null;
+
+    const [_, date, lessonStr] = match;
+    const lesson = parseInt(lessonStr);
+    return {
+      date,
+      lesson,
+      classrooms: entry.data,
+    };
+  })
+  .filter(Boolean)
+  .sort((a, b) => a!.lesson - b!.lesson);
+
+const date = dataList[0].date;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>工学馆空教室</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 1rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .card {
+        margin-bottom: 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        background: #f9fafb;
+      }
+      .card h2 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+        gap: 0.5rem;
+      }
+      .room {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 0.3rem;
+        text-align: center;
+        border-radius: 0.375rem;
+        font-size: 0.9rem;
+      }
+      summary {
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{date} 工学馆空教室</h1>
+
+    {
+      dataList.map(({ lesson, classrooms }) => (
+        <details class="card">
+          <summary style="cursor: pointer; font-weight: bold; font-size: 1rem;">
+            第 {lesson} 节
+          </summary>
+
+          <div class="grid" style="margin-top: 0.5rem;">
+            {classrooms.length === 0 ? (
+              <p>无数据</p>
+            ) : (
+              classrooms.map((name) => <div class="room">{name}</div>)
+            )}
+          </div>
+        </details>
+      ))
+    }
+  </body>
 </html>
