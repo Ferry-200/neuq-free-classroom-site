@@ -28,24 +28,46 @@ const date = dataList[0].date;
     <title>工学馆空教室</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
+      .md-theme {
+        --md-surface: #f9f9ff;
+        --md-surface-container: #ededf4;
+        --md-on-surface: #191c20;
+        --md-secondary-container: #dae2f9;
+        --md-on-secondary-container: #3e4759;
+        --md-outline: #74777f;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .md-theme {
+          --md-surface: #111318;
+          --md-surface-container: #1d2024;
+          --md-on-surface: #e2e2e9;
+          --md-secondary-container: #3e4759;
+          --md-on-secondary-container: #dae2f9;
+          --md-outline: #8e9099;
+        }
+      }
       body {
         font-family: sans-serif;
         padding: 1rem;
+        background-color: var(--md-surface);
       }
       h1 {
         font-size: 1.5rem;
         margin-bottom: 1rem;
+        color: var(--md-on-surface);
       }
       .card {
         margin-bottom: 1rem;
-        border: 1px solid #e5e7eb;
+        border: 1px solid var(--md-outline);
         border-radius: 0.5rem;
         padding: 0.75rem;
-        background: #f9fafb;
+        background: var(--md-surface-container);
       }
       .card h2 {
         font-size: 1rem;
         margin-bottom: 0.5rem;
+        color: var(--md-on-surface);
       }
       .grid {
         display: grid;
@@ -53,8 +75,8 @@ const date = dataList[0].date;
         gap: 0.5rem;
       }
       .room {
-        background: #e0f2fe;
-        color: #0369a1;
+        background: var(--md-secondary-container);
+        color: var(--md-on-secondary-container);
         padding: 0.3rem;
         text-align: center;
         border-radius: 0.375rem;
@@ -62,18 +84,20 @@ const date = dataList[0].date;
       }
       summary {
         outline: none;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+		color: var(--md-on-surface);
       }
     </style>
   </head>
-  <body>
+  <body class="md-theme">
     <h1>{date} 工学馆空教室</h1>
 
     {
       dataList.map(({ lesson, classrooms }) => (
         <details class="card">
-          <summary style="cursor: pointer; font-weight: bold; font-size: 1rem;">
-            第 {lesson} 节
-          </summary>
+          <summary>第 {lesson} 节</summary>
 
           <div class="grid" style="margin-top: 0.5rem;">
             {classrooms.length === 0 ? (
