@@ -1,8 +1,25 @@
 ---
 import { getCollection } from "astro:content";
 import buildInfo from "../build-info.json";
+import { undefined } from "astro:schema";
 
 const buildMsg = buildInfo.message;
+
+const lessonTime = [
+  undefined,
+  "08:00 ~ 08:45",
+  "08:50 ~ 09:35",
+  "10:05 ~ 10:50",
+  "10:55 ~ 11:40",
+  "14:00 ~ 14:45",
+  "14:50 ~ 15:35",
+  "16:05 ~ 16:50",
+  "16:55 ~ 17:40",
+  "18:40 ~ 19:25",
+  "19:30 ~ 20:15",
+  "20:25 ~ 21:10",
+  "21:15 ~ 22:00",
+];
 
 const allData = await getCollection("free-classroom-data");
 
@@ -100,13 +117,13 @@ const date = dataList[0].date;
         font-size: 0.8rem;
       }
 
-	  .footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-	  }
+      .footer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
     </style>
   </head>
   <body class="md-theme">
@@ -118,7 +135,9 @@ const date = dataList[0].date;
     {
       dataList.map(({ lesson, classrooms }) => (
         <details class="card">
-          <summary>第 {lesson} 节</summary>
+          <summary>
+            第 {lesson} 节（{lessonTime[lesson]}）
+          </summary>
 
           <div class="grid">
             {classrooms.length === 0 ? (
