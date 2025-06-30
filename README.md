@@ -7,7 +7,7 @@
   data: `["工学馆103", "工学馆111", ...]`
 - 构建信息  
   path: `src/build-info.json`  
-  data: `{ "msg": "..." }`
+  data: `{ "message": "..." }`
 
 ## 数据来源
 
