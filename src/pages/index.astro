@@ -18,7 +18,7 @@ const dataList = allData
       lesson,
       classrooms: entry.data
         .filter((value) => value.startsWith("工学馆"))
-		.map((value) => value.replace("工学馆", "G"))
+        .map((value) => value.replace("工学馆", "G"))
         .sort(),
     };
   })
@@ -88,7 +88,7 @@ const date = dataList[0].date;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
         gap: 0.5rem;
-		padding: 0 0.75rem 0.75rem 0.75rem;
+        padding: 0 0.75rem 0.75rem 0.75rem;
       }
 
       .room {
@@ -99,6 +99,14 @@ const date = dataList[0].date;
         border-radius: 0.2rem;
         font-size: 0.8rem;
       }
+
+	  .footer {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+	  }
     </style>
   </head>
   <body class="md-theme">
@@ -122,5 +130,20 @@ const date = dataList[0].date;
         </details>
       ))
     }
+
+    <div class="footer">
+      <span>
+        网站源码：
+        <a href="https://github.com/Ferry-200/neuq-free-classroom-site">
+          Ferry-200/neuq-free-classroom-site
+        </a>
+      </span>
+      <span>
+        数据来源：
+        <a href="https://github.com/Ferry-200/neuq-free-classroom">
+          Ferry-200/neuq-free-classroom
+        </a>
+      </span>
+    </div>
   </body>
 </html>
