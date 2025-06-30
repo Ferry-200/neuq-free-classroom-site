@@ -1,5 +1,8 @@
 ---
 import { getCollection } from "astro:content";
+import buildInfo from "../build-info.json";
+
+const buildMsg = buildInfo.message;
 
 const allData = await getCollection("free-classroom-data");
 
@@ -13,7 +16,10 @@ const dataList = allData
     return {
       date,
       lesson,
-      classrooms: entry.data,
+      classrooms: entry.data
+        .filter((value) => value.startsWith("工学馆"))
+		.map((value) => value.replace("工学馆", "G"))
+        .sort(),
     };
   })
   .filter(Boolean)
@@ -47,59 +53,66 @@ const date = dataList[0].date;
           --md-outline: #8e9099;
         }
       }
+
       body {
         font-family: sans-serif;
         padding: 1rem;
         background-color: var(--md-surface);
-      }
-      h1 {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
         color: var(--md-on-surface);
       }
+
+      .heading {
+        margin-bottom: 1rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
       .card {
         margin-bottom: 1rem;
         border: 1px solid var(--md-outline);
         border-radius: 0.5rem;
-        padding: 0.75rem;
         background: var(--md-surface-container);
       }
-      .card h2 {
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-        color: var(--md-on-surface);
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
-        gap: 0.5rem;
-      }
-      .room {
-        background: var(--md-secondary-container);
-        color: var(--md-on-secondary-container);
-        padding: 0.3rem;
-        text-align: center;
-        border-radius: 0.375rem;
-        font-size: 0.9rem;
-      }
+
       summary {
         outline: none;
         cursor: pointer;
         font-weight: bold;
         font-size: 1rem;
-		color: var(--md-on-surface);
+        padding: 0.75rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+        gap: 0.5rem;
+		padding: 0 0.75rem 0.75rem 0.75rem;
+      }
+
+      .room {
+        background: var(--md-secondary-container);
+        color: var(--md-on-secondary-container);
+        padding: 0.2rem;
+        text-align: center;
+        border-radius: 0.2rem;
+        font-size: 0.8rem;
       }
     </style>
   </head>
   <body class="md-theme">
-    <h1>{date} 工学馆空教室</h1>
+    <div class="heading">
+      <h1>{date} 工学馆空教室</h1>
+      <span>{buildMsg}</span>
+    </div>
 
     {
       dataList.map(({ lesson, classrooms }) => (
         <details class="card">
           <summary>第 {lesson} 节</summary>
 
-          <div class="grid" style="margin-top: 0.5rem;">
+          <div class="grid">
             {classrooms.length === 0 ? (
               <p>无数据</p>
             ) : (
