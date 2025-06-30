@@ -12,3 +12,7 @@
 ## 数据来源
 
 [Ferry-200/neuq-free-classroom](https://github.com/Ferry-200/neuq-free-classroom)
+
+## 构建
+
+`npm run build`
