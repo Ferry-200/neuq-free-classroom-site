@@ -51,6 +51,7 @@ const date = dataList[0].date;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       .md-theme {
+        --md-primary: #415f91;
         --md-surface: #f9f9ff;
         --md-surface-container: #ededf4;
         --md-on-surface: #191c20;
@@ -61,6 +62,7 @@ const date = dataList[0].date;
 
       @media (prefers-color-scheme: dark) {
         .md-theme {
+          --md-primary: #aac7ff;
           --md-surface: #111318;
           --md-surface-container: #1d2024;
           --md-on-surface: #e2e2e9;
@@ -123,6 +125,10 @@ const date = dataList[0].date;
         align-items: center;
         text-align: center;
         font-size: 0.9rem;
+      }
+
+      .footer a {
+        color: var(--md-primary);
       }
     </style>
   </head>
