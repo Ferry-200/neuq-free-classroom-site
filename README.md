@@ -1,5 +1,7 @@
 # NEUQ Free Classroom Site
 
+[![Deploy Astro Site](https://github.com/Ferry-200/neuq-free-classroom-site/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ferry-200/neuq-free-classroom-site/actions/workflows/deploy.yml)
+
 ## 数据
 
 - 空教室表  
