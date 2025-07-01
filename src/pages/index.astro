@@ -20,6 +20,21 @@ const lessonTime = [
   "21:15 ~ 22:00",
 ];
 
+const lessonType = {
+  1: "morning",
+  2: "morning",
+  3: "morning",
+  4: "morning",
+  5: "afternoon",
+  6: "afternoon",
+  7: "afternoon",
+  8: "afternoon",
+  9: "evening",
+  10: "evening",
+  11: "evening",
+  12: "evening",
+};
+
 const allData = await getCollection("free-classroom-data");
 
 const dataList = allData
@@ -32,10 +47,12 @@ const dataList = allData
     return {
       date,
       lesson,
-      classrooms: entry.data
-        .filter((value) => value.startsWith("工学馆"))
-        .map((value) => value.replace("工学馆", "G"))
-        .sort(),
+      classrooms: new Set(
+        entry.data
+          .filter((value) => value.startsWith("工学馆"))
+          .map((value) => value.replace("工学馆", "G"))
+          .sort()
+      ),
     };
   })
   .filter(Boolean)
@@ -48,7 +65,7 @@ const date = dataList[0].date;
   <head>
     <meta charset="UTF-8" />
     <title>工学馆空教室</title>
-    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       .md-theme {
@@ -59,6 +76,7 @@ const date = dataList[0].date;
         --md-secondary-container: #dae2f9;
         --md-on-secondary-container: #3e4759;
         --md-outline: #74777f;
+        --md-error: #ba1a1a;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -70,6 +88,7 @@ const date = dataList[0].date;
           --md-secondary-container: #3e4759;
           --md-on-secondary-container: #dae2f9;
           --md-outline: #8e9099;
+          --md-error: #ffb4ab;
         }
       }
 
@@ -82,6 +101,13 @@ const date = dataList[0].date;
 
       .heading {
         margin-bottom: 1rem;
+      }
+
+      .help-msg {
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
       }
 
       h1 {
@@ -119,6 +145,14 @@ const date = dataList[0].date;
         font-size: 0.9rem;
       }
 
+      .room.new {
+        font-weight: bold;
+      }
+
+      .room.soon-unavailable {
+        color: var(--md-error);
+      }
+
       .footer {
         display: flex;
         flex-direction: column;
@@ -137,20 +171,56 @@ const date = dataList[0].date;
     <div class="heading">
       <h1>{date} 工学馆空教室</h1>
       <span>{buildMsg}</span>
+      <div class="help-msg">
+        <span>
+          <span class="room new">G000</span>
+          ：同时间段<b>本节课起</b>空闲
+        </span>
+        <span>
+          <span class="room soon-unavailable">G000</span>
+          ：同时间段<b>本节课后</b>被占用
+        </span>
+      </div>
     </div>
 
     {
-      dataList.map(({ lesson, classrooms }) => (
+      dataList.map(({ lesson, classrooms }, i, arr) => (
         <details class="card">
           <summary>
-            <span style="margin-left: 0.20rem;">第 {lesson} 节（{lessonTime[lesson]}）</span>
+            <span style="margin-left: 0.20rem;">
+              第 {lesson} 节（{lessonTime[lesson]}）
+            </span>
           </summary>
 
           <div class="grid">
-            {classrooms.length === 0 ? (
+            {classrooms.size === 0 ? (
               <p>无数据</p>
             ) : (
-              classrooms.map((name) => <div class="room">{name}</div>)
+              classrooms.values().map(function (name) {
+                const notFirst = i > 0;
+                const notLast = i < arr.length - 1;
+                const sameTypeWithLast =
+                  notFirst && lessonType[lesson] === lessonType[lesson - 1];
+                const sameTypeWithNext =
+                  notLast && lessonType[lesson] === lessonType[lesson + 1];
+                return (
+                  <div
+                    class={[
+                      "room",
+                      sameTypeWithLast &&
+                        (arr[i - 1].classrooms.has(name) ? undefined : "new"),
+                      sameTypeWithNext &&
+                        (arr[i + 1].classrooms.has(name)
+                          ? undefined
+                          : "soon-unavailable"),
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  >
+                    {name}
+                  </div>
+                );
+              })
             )}
           </div>
         </details>
