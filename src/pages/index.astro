@@ -76,6 +76,9 @@ const date = dataList[0].date;
   <style>
     .md-theme {
       --md-primary: #415f91;
+      --md-on-primary: #ffffff;
+      --md-primary-hover: rgba(255, 255, 255, 0.08);
+      --md-primary-active: rgba(255, 255, 255, 0.12);
       --md-surface: #f9f9ff;
       --md-surface-container: #ededf4;
       --md-on-surface: #191c20;
@@ -92,6 +95,9 @@ const date = dataList[0].date;
     @media (prefers-color-scheme: dark) {
       .md-theme {
         --md-primary: #aac7ff;
+        --md-on-primary: #0a305f;
+        --md-primary-hover: rgba(10, 48, 95, 0.08);
+        --md-primary-active: rgba(10, 48, 95, 0.12);
         --md-surface: #111318;
         --md-surface-container: #1d2024;
         --md-on-surface: #e2e2e9;
@@ -250,6 +256,45 @@ const date = dataList[0].date;
       left: 0;
       top: 0;
     }
+
+    #feedback-dialog .feedback-option button {
+      border: none;
+      background-color: var(--md-primary);
+      color: var(--md-on-primary);
+      height: 32px;
+      border-radius: 16px;
+      padding: 0 16px;
+
+      position: relative;
+      cursor: pointer;
+    }
+
+    #feedback-dialog .feedback-option {
+      margin-top: 8px;
+      display: flex;
+      justify-content: end;
+      gap: 8px;
+    }
+
+    #feedback-dialog .feedback-option button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      pointer-events: none;
+      transition: background-color 150ms;
+    }
+
+    #feedback-dialog .feedback-option button:hover::before {
+      background-color: var(--md-primary-hover);
+    }
+
+    #feedback-dialog .feedback-option button:active::before {
+      background-color: var(--md-primary-active);
+    }
   </style>
 </head>
 
@@ -346,8 +391,10 @@ const date = dataList[0].date;
   <div id="feedback-scrim"></div>
   <div id="feedback-dialog">
     <h1>这间教室被占用了吗</h1>
-    <button type="button" id="feedback-option-yes">是</button>
-    <button type="button" id="feedback-option-no">否</button>
+    <div class="feedback-option">
+      <button type="button" id="feedback-option-yes">是</button>
+      <button type="button" id="feedback-option-no">否</button>
+    </div>
   </div>
 
   <script>
