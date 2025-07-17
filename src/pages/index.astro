@@ -113,6 +113,7 @@ const date = dataList[0].date;
     }
 
     body {
+      margin: 0;
       font-family: sans-serif;
       padding: 1rem;
       background-color: var(--md-surface);
@@ -128,7 +129,7 @@ const date = dataList[0].date;
     }
 
     .help-msg {
-      margin-top: 1rem;
+      margin-top: 0.5rem;
       display: flex;
       align-items: start;
       flex-direction: column;
@@ -312,6 +313,11 @@ const date = dataList[0].date;
         <span class="room soon-unavailable">G000</span>
         ：同时间段<b>本节课后</b>被占用
       </span>
+      <span>
+        <span class="room feedback-unavailable">G000(2)</span>
+        ：有 2 条 G000 在这个时间段被占用的反馈
+      </span>
+      <span>点击各节次空教室可以反馈教室占用情况</span>
     </div>
   </div>
 
@@ -399,7 +405,7 @@ const date = dataList[0].date;
 
   <script>
     function sendFeedback(lesson, roomName, unavai) {
-      fetch("http://localhost:3000/feedback", {
+      fetch("https://classroom.ferry-music.fun/feedback", {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=utf-8"
@@ -454,7 +460,7 @@ const date = dataList[0].date;
   </script>
 
   <script>
-    fetch("http://localhost:3000/feedback/summary").then(
+    fetch("https://classroom.ferry-music.fun/feedback/summary").then(
       (res) => {
         if (!res.ok) return
 
