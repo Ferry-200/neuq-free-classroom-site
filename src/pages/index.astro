@@ -48,15 +48,15 @@ const dataList = allData
       date,
       lesson,
       classrooms: new Set(
-        entry.data
+        entry
+          .data
           .filter((value) => value.startsWith("工学馆"))
           .map((value) => value.replace("工学馆", "G"))
           .sort()
       ),
     };
-  })
-  .filter(Boolean)
-  .sort((a, b) => a!.lesson - b!.lesson);
+  }).filter(Boolean)
+    .sort((a, b) => a!.lesson - b!.lesson);
 
 /** 1-8 节可用的教室 */
 const allDayFree = dataList
@@ -68,208 +68,437 @@ const date = dataList[0].date;
 ---
 
 <html lang="zh">
-  <head>
-    <meta charset="UTF-8" />
-    <title>工学馆空教室</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      .md-theme {
-        --md-primary: #415f91;
-        --md-surface: #f9f9ff;
-        --md-surface-container: #ededf4;
-        --md-on-surface: #191c20;
-        --md-secondary-container: #dae2f9;
-        --md-on-secondary-container: #3e4759;
-        --md-outline: #74777f;
-        --md-error: #ba1a1a;
-      }
 
-      @media (prefers-color-scheme: dark) {
-        .md-theme {
-          --md-primary: #aac7ff;
-          --md-surface: #111318;
-          --md-surface-container: #1d2024;
-          --md-on-surface: #e2e2e9;
-          --md-secondary-container: #3e4759;
-          --md-on-secondary-container: #dae2f9;
-          --md-outline: #8e9099;
-          --md-error: #ffb4ab;
-        }
-      }
-
-      body {
-        font-family: sans-serif;
-        padding: 1rem;
-        background-color: var(--md-surface);
-        color: var(--md-on-surface);
-      }
-
-      a {
-        color: var(--md-primary);
-      }
-
-      .heading {
-        margin-bottom: 1rem;
-      }
-
-      .help-msg {
-        margin-top: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.9rem;
-        font-size: 0.9rem;
-      }
-
-      .help-msg a {
-        color: var(--md-error);
-        font-weight: bold;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      .card {
-        margin-bottom: 1rem;
-        border: 1px solid var(--md-outline);
-        border-radius: 0.5rem;
-        background: var(--md-surface-container);
-      }
-
-      summary {
-        outline: none;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 1rem;
-        padding: 0.75rem;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
-        gap: 0.5rem;
-        padding: 0 0.75rem 0.75rem 0.75rem;
-      }
-
-      .room {
-        background: var(--md-secondary-container);
-        color: var(--md-on-secondary-container);
-        padding: 0.2rem;
-        text-align: center;
-        border-radius: 0.2rem;
-        font-size: 0.9rem;
-      }
-
-      .room.new {
-        font-weight: bold;
-        text-decoration: underline wavy;
-      }
-
-      .room.soon-unavailable {
-        font-weight: bold;
-        color: var(--md-error);
-      }
-
-      .footer {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        font-size: 0.9rem;
-      }
-    </style>
-  </head>
-  <body class="md-theme">
-    <div class="heading">
-      <h1>{date} 工学馆空教室</h1>
-      <span>{buildMsg}</span>
-      <div class="help-msg">
-        <a href="/disclaimer">本服务与东北大学秦皇岛分校无直接关联</a>
-        <span>
-          <span class="room new">G000</span>
-          ：同时间段<b>本节课起</b>空闲
-        </span>
-        <span>
-          <span class="room soon-unavailable">G000</span>
-          ：同时间段<b>本节课后</b>被占用
-        </span>
-      </div>
-    </div>
-
-    <details class="card">
-      <summary>
-        <span style="margin-left: 0.20rem;">第 1 - 8 节</span>
-      </summary>
-
-      <div class="grid">
-        {
-          allDayFree.size === 0 ? (
-            <p>无数据</p>
-          ) : (
-            allDayFree.values().map((name) => <div class="room">{name}</div>)
-          )
-        }
-      </div>
-    </details>
-
-    {
-      dataList.map(({ lesson, classrooms }, i, arr) => (
-        <details class="card">
-          <summary>
-            <span style="margin-left: 0.20rem;">
-              第 {lesson} 节（{lessonTime[lesson]}）
-            </span>
-          </summary>
-
-          <div class="grid">
-            {classrooms.size === 0 ? (
-              <p>无数据</p>
-            ) : (
-              classrooms.values().map((name) => {
-                const notFirst = i > 0;
-                const notLast = i < arr.length - 1;
-                const sameTypeWithLast =
-                  notFirst && lessonType[lesson] === lessonType[lesson - 1];
-                const sameTypeWithNext =
-                  notLast && lessonType[lesson] === lessonType[lesson + 1];
-                return (
-                  <div
-                    class={[
-                      "room",
-                      sameTypeWithLast &&
-                        (arr[i - 1].classrooms.has(name) ? undefined : "new"),
-                      sameTypeWithNext &&
-                        (arr[i + 1].classrooms.has(name)
-                          ? undefined
-                          : "soon-unavailable"),
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
-                  >
-                    {name}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </details>
-      ))
+<head>
+  <meta charset="UTF-8" />
+  <title>工学馆空教室</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    .md-theme {
+      --md-primary: #415f91;
+      --md-on-primary: #ffffff;
+      --md-primary-hover: rgba(255, 255, 255, 0.08);
+      --md-primary-active: rgba(255, 255, 255, 0.12);
+      --md-surface: #f9f9ff;
+      --md-surface-container: #ededf4;
+      --md-on-surface: #191c20;
+      --md-secondary-container: #dae2f9;
+      --md-on-secondary-container: #3e4759;
+      --md-secondary-container-hover: rgba(62, 71, 89, 0.08);
+      --md-secondary-container-active: rgba(62, 71, 89, 0.12);
+      --md-outline: #74777f;
+      --md-error: #ba1a1a;
+      --md-error-container: #ffdad6;
+      --md-on-error-container: #93000a;
     }
 
-    <div class="footer">
+    @media (prefers-color-scheme: dark) {
+      .md-theme {
+        --md-primary: #aac7ff;
+        --md-on-primary: #0a305f;
+        --md-primary-hover: rgba(10, 48, 95, 0.08);
+        --md-primary-active: rgba(10, 48, 95, 0.12);
+        --md-surface: #111318;
+        --md-surface-container: #1d2024;
+        --md-on-surface: #e2e2e9;
+        --md-secondary-container: #3e4759;
+        --md-on-secondary-container: #dae2f9;
+        --md-secondary-container-hover: rgba(218, 226, 249, 0.08);
+        --md-secondary-container-active: rgb(218, 226, 249, 0.08);
+        --md-outline: #8e9099;
+        --md-error: #ffb4ab;
+        --md-error-container: #93000a;
+        --md-on-error-container: #ffdad6;
+      }
+    }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      padding: 1rem;
+      background-color: var(--md-surface);
+      color: var(--md-on-surface);
+    }
+
+    a {
+      color: var(--md-primary);
+    }
+
+    .heading {
+      margin-bottom: 1rem;
+    }
+
+    .help-msg {
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: start;
+      flex-direction: column;
+      gap: 0.9rem;
+      font-size: 0.9rem;
+    }
+
+    .help-msg a {
+      color: var(--md-error);
+      font-weight: bold;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .card {
+      margin-bottom: 1rem;
+      border: 1px solid var(--md-outline);
+      border-radius: 0.5rem;
+      background: var(--md-surface-container);
+    }
+
+    summary {
+      outline: none;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 0.75rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+      gap: 0.5rem;
+      padding: 0 0.75rem 0.75rem 0.75rem;
+    }
+
+    .room {
+      background: var(--md-secondary-container);
+      color: var(--md-on-secondary-container);
+      padding: 0.2rem;
+      text-align: center;
+      border-radius: 0.2rem;
+      font-size: 0.9rem;
+    }
+
+    .clickable {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .clickable::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      pointer-events: none;
+      transition: background-color 150ms;
+    }
+
+    .clickable:hover::before {
+      background-color: var(--md-secondary-container-hover);
+    }
+
+    .clickable:active::before {
+      background-color: var(--md-secondary-container-active);
+    }
+
+    .room.new {
+      font-weight: bold;
+      text-decoration: underline wavy;
+    }
+
+    .room.soon-unavailable {
+      font-weight: bold;
+      color: var(--md-error);
+    }
+
+    .room.feedback-unavailable {
+      font-weight: bold;
+      color: var(--md-on-error-container);
+      background-color: var(--md-error-container);
+    }
+
+    .footer {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    #feedback-dialog {
+      display: none;
+      position: fixed;
+      z-index: 2;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 16px;
+      border-radius: 16px;
+      background-color: var(--md-surface-container);
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, 
+                  rgba(0, 0, 0, 0.14) 0px 6px 10px 0px, 
+                  rgba(0, 0, 0, 0.12) 0px 1px 18px 0px;
+    }
+
+    #feedback-dialog * {
+      margin: 0;
+    }
+
+    #feedback-scrim {
+      display: none;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+    }
+
+    #feedback-dialog .feedback-option button {
+      border: none;
+      background-color: var(--md-primary);
+      color: var(--md-on-primary);
+      height: 32px;
+      border-radius: 16px;
+      padding: 0 16px;
+
+      position: relative;
+      cursor: pointer;
+    }
+
+    #feedback-dialog .feedback-option {
+      margin-top: 8px;
+      display: flex;
+      justify-content: end;
+      gap: 8px;
+    }
+
+    #feedback-dialog .feedback-option button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      pointer-events: none;
+      transition: background-color 150ms;
+    }
+
+    #feedback-dialog .feedback-option button:hover::before {
+      background-color: var(--md-primary-hover);
+    }
+
+    #feedback-dialog .feedback-option button:active::before {
+      background-color: var(--md-primary-active);
+    }
+  </style>
+</head>
+
+<body class="md-theme">
+  <div class="heading">
+    <h1>{date} 工学馆空教室</h1>
+    <span>{buildMsg}</span>
+    <div class="help-msg">
+      <a href="/disclaimer">本服务与东北大学秦皇岛分校无直接关联</a>
       <span>
-        网站源码：
-        <a href="https://github.com/Ferry-200/neuq-free-classroom-site">
-          Ferry-200/neuq-free-classroom-site
-        </a>
+        <span class="room new">G000</span>
+        ：同时间段<b>本节课起</b>空闲
       </span>
       <span>
-        数据来源：
-        <a href="https://github.com/Ferry-200/neuq-free-classroom">
-          Ferry-200/neuq-free-classroom
-        </a>
+        <span class="room soon-unavailable">G000</span>
+        ：同时间段<b>本节课后</b>被占用
       </span>
+      <span>
+        <span class="room feedback-unavailable">G000(2)</span>
+        ：有 2 条 G000 在这个时间段被占用的反馈
+      </span>
+      <span>点击各节次空教室可以反馈教室占用情况</span>
     </div>
-  </body>
+  </div>
+
+  <details class="card">
+    <summary>
+      <span style="margin-left: 0.20rem;">第 1 - 8 节</span>
+    </summary>
+
+    <div class="grid">
+      {
+        allDayFree.size === 0
+          ? (<p>无数据</p>)
+          : (
+            allDayFree
+              .values()
+              .map((name) => (<div class="room" id=`1-8-${name}`>{name}</div>))
+          )
+      }
+    </div>
+  </details>
+
+  {
+    dataList.map(({lesson, classrooms}, i, arr) => (
+      <details class="card">
+        <summary>
+          <span style="margin-left: 0.20rem;">
+            第 {lesson} 节（{lessonTime[lesson]}）
+          </span>
+        </summary>
+
+        <div class="grid lesson-room-grid">
+          {
+            classrooms.size === 0 
+              ? (<p>无数据</p>) 
+              : (classrooms.values().map((name) => {
+                  const notFirst = i > 0;
+                  const notLast = i < arr.length - 1;
+                  const sameTypeWithLast = notFirst 
+                    && lessonType[lesson] === lessonType[lesson - 1];
+                  const sameTypeWithNext = notLast 
+                    && lessonType[lesson] === lessonType[lesson + 1];
+                  return (<div
+                    id=`${lesson}-${name}`
+                    class={[
+                      "room", 
+                      "clickable", 
+                      sameTypeWithLast 
+                        && (arr[i - 1].classrooms.has(name) ? undefined : "new"), 
+                      sameTypeWithNext 
+                        && (arr[i + 1].classrooms.has(name) ? undefined : "soon-unavailable")
+                    ].filter(Boolean).join(" ")}>
+                      {name}
+                    </div>
+                  );
+              }))
+          }
+        </div>
+      </details>
+    ))
+  }
+
+  <div class="footer">
+    <span>
+      网站源码：
+      <a href="https://github.com/Ferry-200/neuq-free-classroom-site">
+        Ferry-200/neuq-free-classroom-site
+      </a>
+    </span>
+    <span>
+      数据来源：
+      <a href="https://github.com/Ferry-200/neuq-free-classroom">
+        Ferry-200/neuq-free-classroom
+      </a>
+    </span>
+  </div>
+
+  <div id="feedback-scrim"></div>
+  <div id="feedback-dialog">
+    <h1>这间教室被占用了吗</h1>
+    <div class="feedback-option">
+      <button type="button" id="feedback-option-yes">是</button>
+      <button type="button" id="feedback-option-no">否</button>
+    </div>
+  </div>
+
+  <script>
+    function sendFeedback(lesson, roomName, unavai) {
+      fetch("https://classroom.ferry-music.fun/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        body: JSON.stringify({
+          roomName: roomName,
+          lesson: Number.parseInt(lesson),
+          available: !unavai
+        })
+      }).then((res) => res.json()).then(console.log)
+    }
+
+    function toggleFeedbackDialog(open, lesson, roomName) {
+      const dialog = document.getElementById("feedback-dialog")
+      const dialogScrim = document.getElementById("feedback-scrim")
+      dialog.style.display = open ? "block" : "none"
+      dialogScrim.style.display = open ? "block" : "none"
+      document.body.style.overflow = open ? "hidden" : "auto"
+      if (open) {
+        const dialogTitle = dialog.getElementsByTagName("h1")[0]
+        if (dialogTitle) {
+          dialogTitle.innerText = `${roomName} 在第 ${lesson} 节被占用了吗？`
+        }
+
+        const yesFeedbackBtn = document.getElementById("feedback-option-yes")
+        yesFeedbackBtn
+          .addEventListener("click", () => {
+            sendFeedback(lesson, roomName, true)
+            toggleFeedbackDialog(false)
+          })
+
+        const noFeedbackBtn = document.getElementById("feedback-option-no")
+        noFeedbackBtn
+          .addEventListener("click", () => {
+            sendFeedback(lesson, roomName, false)
+            toggleFeedbackDialog(false)
+          })
+      }
+    }
+
+    const roomGrids = document.getElementsByClassName('lesson-room-grid')
+    for (const grid of roomGrids) {
+      grid.addEventListener('click', (ev) => {
+        if (ev.target.classList.contains('room')) {
+          const splited = ev.target.id.split('-')
+          if (splited.length !== 2) return
+
+          toggleFeedbackDialog(true, splited[0], splited[1])
+        }
+      })
+    }
+  </script>
+
+  <script>
+    fetch("https://classroom.ferry-music.fun/feedback/summary").then(
+      (res) => {
+        if (!res.ok) return
+
+        res.json().then((summary) => {
+          if (!summary) return
+
+          const allDaySummary = new Map()
+
+          for (const feedback of summary) {
+            const roomName = feedback['roomName']
+            const lesson = feedback['section']
+            const actualUnavailable = feedback['unavailable'] - feedback['available']
+            if (actualUnavailable < 1) continue
+
+            if (lesson < 9) {
+              const memo = allDaySummary.get(roomName)
+              allDaySummary.set(roomName, memo ? actualUnavailable + memo : actualUnavailable)
+            }
+
+            const roomEle = document.getElementById(`${lesson}-${roomName}`)
+            if (roomEle) {
+              roomEle.innerHTML = `${roomName}<br>(${actualUnavailable})`
+              roomEle.classList.add('feedback-unavailable')
+            }
+          }
+
+          const entries = allDaySummary.entries()
+          for (const feedback of entries) {
+            const roomEle = document.getElementById(`1-8-${feedback[0]}`)
+            if (roomEle) {
+              roomEle.innerHTML = `${feedback[0]}<br>(${feedback[1]})`
+              roomEle.classList.add('feedback-unavailable')
+            }
+          }
+        })
+      }
+    )
+  </script>
+</body>
+
 </html>
