@@ -121,6 +121,15 @@ const date = dataList[0].date;
       padding: 1rem;
       background-color: var(--md-surface);
       color: var(--md-on-surface);
+      /* Improve screenshot rendering */
+      min-height: 100vh;
+      position: relative;
+    }
+
+    html {
+      /* Ensure proper screenshot capture */
+      position: relative;
+      min-height: 100%;
     }
 
     a {
@@ -306,6 +315,9 @@ const date = dataList[0].date;
       bottom: 20px;
       right: 20px;
       z-index: 10;
+      /* Ensure proper rendering in screenshots */
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .screenshot-btn {
@@ -325,6 +337,9 @@ const date = dataList[0].date;
       font-size: 24px;
       transition: background-color 150ms, transform 150ms;
       position: relative;
+      /* Improve rendering consistency */
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .screenshot-btn::before {
@@ -805,6 +820,66 @@ const date = dataList[0].date;
     }
 
     /**
+     * Alternative screenshot capture with different configuration
+     * @returns {Promise<HTMLCanvasElement>} Promise that resolves to canvas element
+     */
+    async function capturePageScreenshotFallback() {
+      try {
+        const html2canvasLib = await loadHtml2Canvas();
+        
+        // Hide screenshot button during capture
+        const screenshotBtn = document.querySelector('.screenshot-container');
+        const originalDisplay = screenshotBtn ? screenshotBtn.style.display : '';
+        if (screenshotBtn) {
+          screenshotBtn.style.display = 'none';
+        }
+        
+        // Simpler configuration for better compatibility
+        const options = {
+          allowTaint: true,
+          useCORS: true,
+          height: window.innerHeight,
+          width: window.innerWidth,
+          scrollX: window.pageXOffset,
+          scrollY: window.pageYOffset,
+          scale: 1, // Use fixed scale to avoid issues
+          backgroundColor: '#ffffff',
+          removeContainer: true,
+          onclone: (clonedDoc) => {
+            // Remove problematic elements
+            const problematicElements = clonedDoc.querySelectorAll('.screenshot-container, #share-dialog, #share-scrim, #feedback-dialog, #feedback-scrim');
+            problematicElements.forEach(el => el.remove());
+            
+            // Ensure body is visible
+            const body = clonedDoc.body;
+            if (body) {
+              body.style.overflow = 'visible';
+              body.style.position = 'static';
+            }
+          }
+        };
+
+        const canvas = await html2canvasLib(document.body, options);
+        
+        // Restore screenshot button visibility
+        if (screenshotBtn) {
+          screenshotBtn.style.display = originalDisplay;
+        }
+        
+        return canvas;
+      } catch (error) {
+        // Restore screenshot button visibility on error
+        const screenshotBtn = document.querySelector('.screenshot-container');
+        if (screenshotBtn) {
+          screenshotBtn.style.display = '';
+        }
+        
+        console.error('Fallback screenshot capture failed:', error);
+        throw error;
+      }
+    }
+
+    /**
      * Captures the entire visible page content as an image
      * @returns {Promise<HTMLCanvasElement>} Promise that resolves to canvas element
      */
@@ -812,29 +887,98 @@ const date = dataList[0].date;
       try {
         const html2canvasLib = await loadHtml2Canvas();
         
-        // Configuration for optimal screenshot quality
+        // Hide screenshot button during capture to avoid it appearing in screenshot
+        const screenshotBtn = document.querySelector('.screenshot-container');
+        const originalDisplay = screenshotBtn ? screenshotBtn.style.display : '';
+        if (screenshotBtn) {
+          screenshotBtn.style.display = 'none';
+        }
+        
+        // Store current scroll position
+        const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Configuration for optimal screenshot quality and alignment
         const options = {
           allowTaint: true,
           useCORS: true,
           scrollX: 0,
           scrollY: 0,
-          width: window.innerWidth,
-          height: document.body.scrollHeight,
-          scale: window.devicePixelRatio || 1,
-          backgroundColor: getComputedStyle(document.body).backgroundColor || '#ffffff',
-          onclone: (clonedDoc) => {
-            // Ensure all styles are preserved in the clone
+          x: 0,
+          y: 0,
+          width: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth),
+          height: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight),
+          scale: Math.min(window.devicePixelRatio || 1, 2), // Cap scale to avoid memory issues
+          backgroundColor: getComputedStyle(document.documentElement).backgroundColor || 
+                          getComputedStyle(document.body).backgroundColor || '#ffffff',
+          ignoreElements: (element) => {
+            // Ignore fixed positioned elements that might cause alignment issues
+            const style = window.getComputedStyle(element);
+            return style.position === 'fixed' && !element.closest('.screenshot-container');
+          },
+          onclone: (clonedDoc, element) => {
+            // Ensure all styles are preserved and positioning issues are fixed
             const clonedBody = clonedDoc.body;
+            const clonedHtml = clonedDoc.documentElement;
+            
+            if (clonedHtml) {
+              clonedHtml.style.overflow = 'visible';
+              clonedHtml.style.height = 'auto';
+            }
+            
             if (clonedBody) {
               clonedBody.style.overflow = 'visible';
+              clonedBody.style.height = 'auto';
+              clonedBody.style.position = 'static';
+              clonedBody.style.transform = 'none';
+            }
+            
+            // Remove any fixed positioned elements that might cause issues
+            const fixedElements = clonedDoc.querySelectorAll('*');
+            for (const el of fixedElements) {
+              const computedStyle = clonedDoc.defaultView.getComputedStyle(el);
+              if (computedStyle.position === 'fixed') {
+                // Convert fixed elements to absolute positioning relative to their scroll position
+                if (el.classList.contains('screenshot-container') || 
+                    el.id === 'share-dialog' || 
+                    el.id === 'share-scrim' ||
+                    el.id === 'feedback-dialog' ||
+                    el.id === 'feedback-scrim') {
+                  el.style.display = 'none';
+                } else {
+                  el.style.position = 'absolute';
+                  const rect = el.getBoundingClientRect();
+                  el.style.top = (rect.top + scrollY) + 'px';
+                  el.style.left = (rect.left + scrollX) + 'px';
+                }
+              }
             }
           }
         };
 
-        return await html2canvasLib(document.body, options);
+        const canvas = await html2canvasLib(document.documentElement, options);
+        
+        // Restore screenshot button visibility
+        if (screenshotBtn) {
+          screenshotBtn.style.display = originalDisplay;
+        }
+        
+        return canvas;
       } catch (error) {
-        console.error('Screenshot capture failed:', error);
-        throw new Error('截图生成失败，请重试');
+        // Try fallback method if main method fails
+        console.warn('Primary screenshot method failed, trying fallback:', error);
+        try {
+          return await capturePageScreenshotFallback();
+        } catch (fallbackError) {
+          // Restore screenshot button visibility on error
+          const screenshotBtn = document.querySelector('.screenshot-container');
+          if (screenshotBtn) {
+            screenshotBtn.style.display = '';
+          }
+          
+          console.error('Both screenshot methods failed:', fallbackError);
+          throw new Error('截图生成失败，请重试');
+        }
       }
     }
 
