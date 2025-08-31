@@ -300,6 +300,252 @@ const date = dataList[0].date;
     #feedback-dialog .feedback-option button:active::before {
       background-color: var(--md-primary-active);
     }
+
+    /* Screenshot button styles */
+    .screenshot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10;
+    }
+
+    .screenshot-btn {
+      background-color: var(--md-primary);
+      color: var(--md-on-primary);
+      border: none;
+      border-radius: 28px;
+      width: 56px;
+      height: 56px;
+      cursor: pointer;
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, 
+                  rgba(0, 0, 0, 0.14) 0px 6px 10px 0px, 
+                  rgba(0, 0, 0, 0.12) 0px 1px 18px 0px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: background-color 150ms, transform 150ms;
+      position: relative;
+    }
+
+    .screenshot-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      pointer-events: none;
+      transition: background-color 150ms;
+    }
+
+    .screenshot-btn:hover::before {
+      background-color: var(--md-primary-hover);
+    }
+
+    .screenshot-btn:active::before {
+      background-color: var(--md-primary-active);
+    }
+
+    .screenshot-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .screenshot-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Share dialog styles */
+    #share-dialog {
+      display: none;
+      position: fixed;
+      z-index: 12;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 24px;
+      border-radius: 16px;
+      background-color: var(--md-surface-container);
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, 
+                  rgba(0, 0, 0, 0.14) 0px 6px 10px 0px, 
+                  rgba(0, 0, 0, 0.12) 0px 1px 18px 0px;
+      min-width: 320px;
+      max-width: 90vw;
+    }
+
+    #share-dialog * {
+      margin: 0;
+    }
+
+    #share-dialog h2 {
+      margin-bottom: 16px;
+      font-size: 1.25rem;
+    }
+
+    #share-scrim {
+      display: none;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 11;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .share-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .share-btn {
+      background-color: var(--md-secondary-container);
+      color: var(--md-on-secondary-container);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background-color 150ms;
+      position: relative;
+    }
+
+    .share-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      pointer-events: none;
+      transition: background-color 150ms;
+    }
+
+    .share-btn:hover::before {
+      background-color: var(--md-secondary-container-hover);
+    }
+
+    .share-btn:active::before {
+      background-color: var(--md-secondary-container-active);
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .dialog-btn {
+      border: none;
+      background-color: var(--md-primary);
+      color: var(--md-on-primary);
+      height: 36px;
+      border-radius: 18px;
+      padding: 0 16px;
+      cursor: pointer;
+      position: relative;
+      transition: background-color 150ms;
+    }
+
+    .dialog-btn.secondary {
+      background-color: transparent;
+      color: var(--md-primary);
+    }
+
+    .dialog-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      pointer-events: none;
+      transition: background-color 150ms;
+    }
+
+    .dialog-btn:hover::before {
+      background-color: var(--md-primary-hover);
+    }
+
+    .dialog-btn:active::before {
+      background-color: var(--md-primary-active);
+    }
+
+    .dialog-btn.secondary:hover::before {
+      background-color: var(--md-primary-hover);
+    }
+
+    .dialog-btn.secondary:active::before {
+      background-color: var(--md-primary-active);
+    }
+
+    .screenshot-preview {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      margin: 12px 0;
+    }
+
+    /* Loading spinner */
+    .loading-spinner {
+      border: 2px solid var(--md-outline);
+      border-top: 2px solid var(--md-primary);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Accessibility improvements */
+    @media (prefers-reduced-motion: reduce) {
+      .screenshot-btn,
+      .dialog-btn,
+      .share-btn {
+        transition: none;
+      }
+      
+      .screenshot-btn:hover {
+        transform: none;
+      }
+      
+      .loading-spinner {
+        animation: none;
+      }
+    }
+
+    /* Mobile responsive adjustments */
+    @media (max-width: 768px) {
+      .screenshot-container {
+        bottom: 16px;
+        right: 16px;
+      }
+      
+      .screenshot-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+      
+      #share-dialog {
+        margin: 16px;
+        min-width: auto;
+        max-width: calc(100vw - 32px);
+      }
+    }
   </style>
 </head>
 
@@ -406,6 +652,40 @@ const date = dataList[0].date;
     </div>
   </div>
 
+  <!-- Screenshot capture button -->
+  <div class="screenshot-container">
+    <button type="button" 
+            id="screenshot-btn" 
+            class="screenshot-btn"
+            title="截图分享页面"
+            aria-label="截图分享页面">
+      📸
+    </button>
+  </div>
+
+  <!-- Share dialog -->
+  <div id="share-scrim"></div>
+  <div id="share-dialog" role="dialog" aria-labelledby="share-dialog-title" aria-modal="true">
+    <h2 id="share-dialog-title">分享页面截图</h2>
+    <div id="share-content">
+      <!-- Preview image will be inserted here -->
+    </div>
+    <div class="share-options">
+      <button type="button" class="share-btn" id="download-btn">
+        💾 下载图片
+      </button>
+      <button type="button" class="share-btn" id="native-share-btn" style="display: none;">
+        📤 分享图片
+      </button>
+      <button type="button" class="share-btn" id="copy-btn">
+        📋 复制图片
+      </button>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="dialog-btn secondary" id="close-share-dialog">关闭</button>
+    </div>
+  </div>
+
   <script>
     function sendFeedback(lesson, roomName, unavai) {
       fetch("https://classroom.ferry-music.fun/feedback", {
@@ -501,6 +781,303 @@ const date = dataList[0].date;
         })
       }
     )
+  </script>
+
+  <!-- Screenshot capture functionality -->
+  <script>
+    // Import html2canvas dynamically to avoid build issues
+    let html2canvas;
+    
+    /**
+     * Dynamically loads html2canvas library if not already loaded
+     * @returns {Promise} Promise that resolves when html2canvas is ready
+     */
+    async function loadHtml2Canvas() {
+      if (!html2canvas) {
+        try {
+          const module = await import('html2canvas');
+          html2canvas = module.default;
+        } catch (error) {
+          console.error('Failed to load html2canvas:', error);
+          throw new Error('截图功能加载失败，请刷新页面重试');
+        }
+      }
+      return html2canvas;
+    }
+
+    /**
+     * Captures the entire visible page content as an image
+     * @returns {Promise<HTMLCanvasElement>} Promise that resolves to canvas element
+     */
+    async function capturePageScreenshot() {
+      try {
+        const html2canvasLib = await loadHtml2Canvas();
+        
+        // Configuration for optimal screenshot quality
+        const options = {
+          allowTaint: true,
+          useCORS: true,
+          scrollX: 0,
+          scrollY: 0,
+          width: window.innerWidth,
+          height: document.body.scrollHeight,
+          scale: window.devicePixelRatio || 1,
+          backgroundColor: getComputedStyle(document.body).backgroundColor || '#ffffff',
+          onclone: (clonedDoc) => {
+            // Ensure all styles are preserved in the clone
+            const clonedBody = clonedDoc.body;
+            if (clonedBody) {
+              clonedBody.style.overflow = 'visible';
+            }
+          }
+        };
+
+        return await html2canvasLib(document.body, options);
+      } catch (error) {
+        console.error('Screenshot capture failed:', error);
+        throw new Error('截图生成失败，请重试');
+      }
+    }
+
+    /**
+     * Converts canvas to blob for sharing/downloading
+     * @param {HTMLCanvasElement} canvas - The canvas element to convert
+     * @param {string} format - Image format (default: 'image/png')
+     * @param {number} quality - Image quality (0-1, default: 0.9)
+     * @returns {Promise<Blob>} Promise that resolves to image blob
+     */
+    function canvasToBlob(canvas, format = 'image/png', quality = 0.9) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('无法生成图片文件'));
+          }
+        }, format, quality);
+      });
+    }
+
+    /**
+     * Downloads the image blob as a file
+     * @param {Blob} blob - Image blob to download
+     * @param {string} filename - Filename for download
+     */
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    /**
+     * Copies image blob to clipboard (modern browsers only)
+     * @param {Blob} blob - Image blob to copy
+     */
+    async function copyBlobToClipboard(blob) {
+      if (!navigator.clipboard || !window.ClipboardItem) {
+        throw new Error('浏览器不支持复制图片功能');
+      }
+
+      try {
+        const clipboardItem = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([clipboardItem]);
+      } catch (error) {
+        console.error('Failed to copy to clipboard:', error);
+        throw new Error('复制到剪贴板失败');
+      }
+    }
+
+    /**
+     * Uses Web Share API to share the image (mobile browsers mainly)
+     * @param {Blob} blob - Image blob to share
+     */
+    async function shareBlob(blob) {
+      if (!navigator.share) {
+        throw new Error('浏览器不支持原生分享功能');
+      }
+
+      try {
+        const file = new File([blob], 'neuq-classroom-schedule.png', { type: blob.type });
+        await navigator.share({
+          title: '东北大学秦皇岛分校工学馆空教室',
+          text: '分享工学馆空教室信息',
+          files: [file]
+        });
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Share failed:', error);
+          throw new Error('分享失败');
+        }
+      }
+    }
+
+    /**
+     * Shows loading state on button
+     * @param {HTMLElement} button - Button element to show loading on
+     * @param {boolean} loading - Whether to show loading state
+     */
+    function setButtonLoading(button, loading) {
+      if (loading) {
+        button.disabled = true;
+        button.innerHTML = '<div class="loading-spinner"></div>';
+      } else {
+        button.disabled = false;
+        button.innerHTML = '📸';
+      }
+    }
+
+    /**
+     * Shows/hides the share dialog
+     * @param {boolean} show - Whether to show the dialog
+     * @param {HTMLCanvasElement} canvas - Canvas element to preview (optional)
+     */
+    function toggleShareDialog(show, canvas = null) {
+      const dialog = document.getElementById('share-dialog');
+      const scrim = document.getElementById('share-scrim');
+      const content = document.getElementById('share-content');
+      
+      if (show) {
+        // Create preview image
+        if (canvas) {
+          const preview = document.createElement('img');
+          preview.src = canvas.toDataURL();
+          preview.className = 'screenshot-preview';
+          preview.alt = '页面截图预览';
+          content.innerHTML = '';
+          content.appendChild(preview);
+        }
+        
+        dialog.style.display = 'block';
+        scrim.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        // Focus management for accessibility
+        dialog.focus();
+      } else {
+        dialog.style.display = 'none';
+        scrim.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        content.innerHTML = '';
+      }
+    }
+
+    /**
+     * Shows error message to user
+     * @param {string} message - Error message to display
+     */
+    function showError(message) {
+      alert(message); // Simple error display - could be enhanced with custom modal
+    }
+
+    /**
+     * Shows success message to user
+     * @param {string} message - Success message to display
+     */
+    function showSuccess(message) {
+      // Simple success feedback - could be enhanced with toast notifications
+      const originalText = document.getElementById('screenshot-btn').title;
+      const btn = document.getElementById('screenshot-btn');
+      btn.title = message;
+      setTimeout(() => {
+        btn.title = originalText;
+      }, 2000);
+    }
+
+    // Main screenshot capture logic
+    let currentCanvas = null;
+
+    document.getElementById('screenshot-btn').addEventListener('click', async () => {
+      const button = document.getElementById('screenshot-btn');
+      
+      try {
+        setButtonLoading(button, true);
+        
+        // Capture screenshot
+        currentCanvas = await capturePageScreenshot();
+        
+        // Show share dialog
+        toggleShareDialog(true, currentCanvas);
+        
+      } catch (error) {
+        showError(error.message);
+      } finally {
+        setButtonLoading(button, false);
+      }
+    });
+
+    // Share dialog event handlers
+    document.getElementById('download-btn').addEventListener('click', async () => {
+      if (!currentCanvas) return;
+      
+      try {
+        const blob = await canvasToBlob(currentCanvas);
+        const date = new Date().toISOString().slice(0, 10);
+        downloadBlob(blob, `neuq-classroom-${date}.png`);
+        showSuccess('下载成功！');
+      } catch (error) {
+        showError(error.message);
+      }
+    });
+
+    document.getElementById('copy-btn').addEventListener('click', async () => {
+      if (!currentCanvas) return;
+      
+      try {
+        const blob = await canvasToBlob(currentCanvas);
+        await copyBlobToClipboard(blob);
+        showSuccess('已复制到剪贴板！');
+      } catch (error) {
+        showError(error.message);
+      }
+    });
+
+    document.getElementById('native-share-btn').addEventListener('click', async () => {
+      if (!currentCanvas) return;
+      
+      try {
+        const blob = await canvasToBlob(currentCanvas);
+        await shareBlob(blob);
+      } catch (error) {
+        showError(error.message);
+      }
+    });
+
+    document.getElementById('close-share-dialog').addEventListener('click', () => {
+      toggleShareDialog(false);
+    });
+
+    // Close dialog when clicking scrim
+    document.getElementById('share-scrim').addEventListener('click', () => {
+      toggleShareDialog(false);
+    });
+
+    // Keyboard navigation for accessibility
+    document.addEventListener('keydown', (event) => {
+      const dialog = document.getElementById('share-dialog');
+      if (dialog.style.display === 'block') {
+        if (event.key === 'Escape') {
+          toggleShareDialog(false);
+        }
+      }
+    });
+
+    // Check for native share support and show/hide button accordingly
+    if (navigator.share && navigator.canShare) {
+      document.getElementById('native-share-btn').style.display = 'flex';
+    }
+
+    // Preload html2canvas for better performance (optional)
+    setTimeout(() => {
+      loadHtml2Canvas().catch(() => {
+        // Silently fail - library will be loaded when needed
+      });
+    }, 2000);
   </script>
 </body>
 
