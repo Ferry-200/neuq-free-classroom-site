@@ -64,7 +64,6 @@ const allDayFree = dataList
   .map((value) => value.classrooms)
   .reduce((prev, curr) => {
     if (!prev) return curr;
-    // Manual intersection for better browser compatibility
     return new Set([...prev].filter(x => curr.has(x)));
   });
 
@@ -581,7 +580,7 @@ const date = dataList[0].date;
         allDayFree.size === 0
           ? (<p>无数据</p>)
           : (
-            Array.from(allDayFree)
+            Array.from(allDayFree.values())
               .map((name) => (<div class="room" id=`1-8-${name}`>{name}</div>))
           )
       }
@@ -601,7 +600,7 @@ const date = dataList[0].date;
           {
             classrooms.size === 0 
               ? (<p>无数据</p>) 
-              : (Array.from(classrooms).map((name) => {
+              : (Array.from(classrooms.values()).map((name) => {
                   const notFirst = i > 0;
                   const notLast = i < arr.length - 1;
                   const sameTypeWithLast = notFirst 
